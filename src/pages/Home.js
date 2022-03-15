@@ -19,6 +19,9 @@ const Home = () => {
             <LoadingSpinner />
         </div>
     }
+    if (status === "rejected") {
+        console.log("rejected")
+    }
     return <div className="centered">
         {!log.isLoggedin && <>Please Login to Populate this page! 😊</>}
         {log.isLoggedin && <p>{`Hello, ${userName}! 🙌`}</p>}

@@ -39,6 +39,9 @@ const Auth = () => {
         // <Navigate to="/home" />
         navigate("/home")
     }
+    if (isLoading.status === "rejected") {
+        console.log("rejected")
+    }
     return <div className="centered">
         <div className={styles.form}>
             {notify}

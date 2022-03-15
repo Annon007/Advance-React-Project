@@ -19,9 +19,6 @@ const loginSlice = createSlice({
         stayLoggedIn(state) {
             state.isLoggedin = true;
         },
-        setUser(state, action) {
-
-        }
     }
 });
 

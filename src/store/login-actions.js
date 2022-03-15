@@ -1,4 +1,3 @@
-
 import { loginActions } from "./login-slice";
 import { notificationActions } from "./notification-slice";
 import { Configuration } from "../Configuration";
@@ -21,7 +20,8 @@ export const LOGIN_POST_REQ = (data) => {
                 body: JSON.stringify(loginData),
             });
             if (!res.ok) {
-                return;
+                const rejectData = await res.json();
+                return rejectData
             };
 
             const responseData = await res.json();
@@ -31,7 +31,10 @@ export const LOGIN_POST_REQ = (data) => {
         };
         try {
             const resData = await sendReq(data);
-            console.log(resData);
+            console.log(resData.status);
+            if (resData.status === 400 || resData.status === 500 || resData.status === 401) {
+                throw resData;
+            }
             dispatch(loginActions.logIn({
                 accessToken: `${resData.data.tokenType} ${resData.data.accessToken}`,
                 profile: resData.data.user
@@ -46,6 +49,9 @@ export const LOGIN_POST_REQ = (data) => {
                 status: "rejected",
                 message: err.message
             }));
+            if (err.status === 401) {
+                dispatch(loginActions.logOut())
+            }
         }
 
     }
