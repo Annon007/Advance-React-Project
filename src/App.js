@@ -1,24 +1,41 @@
-import logo from './logo.svg';
-import './App.css';
 
+import './App.css';
+import { useEffect } from 'react';
+import { Route, Routes, Navigate } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+
+
+import Home from './pages/Home';
+import UserProfile from './pages/User_Profile';
+import Layout from './layout/Layout';
+import Auth from './pages/Auth';
+import { loginActions } from "./store/login-slice";
+import Forbidden from './pages/Forbidden';
 function App() {
+  const isLoggedIn = useSelector(state => state.login.isLoggedin);
+  const dispatch = useDispatch();
+  console.log(isLoggedIn, "Is log in");
+
+  useEffect(() => {
+    if (localStorage.getItem("TEST_TOKEN")) {
+      dispatch(loginActions.stayLoggedIn());
+    };
+
+  }, [])
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    < >
+      <Layout>
+        <Routes>
+          <Route path='/' element={<Navigate to="/home" />} />
+          <Route path='/home' element={<Home />} />
+
+          {isLoggedIn && <Route path='/user-profile' element={<UserProfile />} />}
+          <Route path='/authentication' element={isLoggedIn ? <Navigate replace to="/home" /> : <Auth />} />
+          <Route path='*' element={<Forbidden />} />
+        </Routes>
+      </Layout>
+
+    </>
   );
 }
 
