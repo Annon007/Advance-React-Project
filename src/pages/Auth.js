@@ -7,12 +7,17 @@ import { LOGIN_POST_REQ } from "../store/login-actions";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
+import { Success_Toast, Error_Toast } from "../ui/toast/Toast";
+let count = 0;
 const Auth = () => {
+    console.log(count++);
     const [isSignUp, setIsSignUp] = useState(false);
     const dispatch = useDispatch();
     const isLoading = useSelector(state => state.notification);
     const navigate = useNavigate();
 
+
+    console.log(isLoading, "NOTIFICATIONS CHECK")
     const handleSignUp = (state) => {
         setIsSignUp(prev => state);
     }
@@ -25,7 +30,10 @@ const Auth = () => {
         const formData = new FormData(e.target);
         const data = Object.fromEntries(formData);
         console.log(data);
+
         dispatch(LOGIN_POST_REQ(data))
+
+
 
     }
 
@@ -34,17 +42,20 @@ const Auth = () => {
             <LoadingSpinner />
         </div>
     }
-    let notify;
-    if (isLoading.status === "fullfiled") {
-        // <Navigate to="/home" />
+    if (isLoading.status === "fullfiled" && (isLoading.name === "login" || isLoading.name === "signup")) {
+        Success_Toast(isLoading?.message);
         navigate("/home")
     }
-    if (isLoading.status === "rejected") {
-        console.log("rejected")
+    if (isLoading.status === "rejected" && (isLoading.name === "login" || isLoading.name === "signup")) {
+        isLoading?.errors?.map(err => Error_Toast(Object.values(err)));
+        Error_Toast(isLoading.message);
+
     }
+
+
     return <div className="centered">
         <div className={styles.form}>
-            {notify}
+
             <h1>{isSignUp ? "Sign Up" : "Login"}</h1>
             <form onSubmit={isSignUp ? onSignupSubmit : onLoginSubmit} className={styles.formInput}>
                 <div className={styles.emailInput}>

@@ -10,6 +10,7 @@ export const LOGIN_POST_REQ = (data) => {
 
             dispatch(notificationActions.setNotification({
                 status: "pending",
+                name: "login"
             }));
             const res = await fetch(Configuration.LOGIN_API, {
                 method: "POST",
@@ -25,13 +26,18 @@ export const LOGIN_POST_REQ = (data) => {
             };
 
             const responseData = await res.json();
+            dispatch(notificationActions.setNotification({
+                status: "fullfiled",
+                message: responseData.message,
+                name: "login"
+            }));
             return responseData
 
 
         };
         try {
             const resData = await sendReq(data);
-            console.log(resData.status);
+            console.log(resData);
             if (resData.status === 400 || resData.status === 500 || resData.status === 401) {
                 throw resData;
             }
@@ -39,15 +45,14 @@ export const LOGIN_POST_REQ = (data) => {
                 accessToken: `${resData.data.tokenType} ${resData.data.accessToken}`,
                 profile: resData.data.user
             }));
-            dispatch(notificationActions.setNotification({
-                status: "fullfiled",
-                message: resData.message
-            }));
+
         } catch (err) {
-            console.log(err)
+            console.log(err, "Errors handeled");
             dispatch(notificationActions.setNotification({
                 status: "rejected",
-                message: err.message
+                message: err.message,
+                errors: err.data.errors,
+                name: "login"
             }));
             if (err.status === 401) {
                 dispatch(loginActions.logOut())
