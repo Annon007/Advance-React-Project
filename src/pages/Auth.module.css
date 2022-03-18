@@ -106,3 +106,9 @@ h1 {
   color: #88dfdf;
   cursor: pointer;
 }
+.errorShow {
+  color: tomato;
+  text-align: center;
+  font-size: 1.2rem;
+  font-weight: 600;
+}

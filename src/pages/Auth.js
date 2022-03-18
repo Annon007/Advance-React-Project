@@ -7,14 +7,15 @@ import { LOGIN_POST_REQ } from "../store/login-actions";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
-import { Success_Toast, Error_Toast } from "../ui/toast/Toast";
-let count = 0;
+import { Success_Toast } from "../ui/toast/Toast.js";
+
 const Auth = () => {
-    console.log(count++);
     const [isSignUp, setIsSignUp] = useState(false);
     const dispatch = useDispatch();
     const isLoading = useSelector(state => state.notification);
     const navigate = useNavigate();
+
+    let { status } = isLoading;
 
 
     console.log(isLoading, "NOTIFICATIONS CHECK")
@@ -33,6 +34,12 @@ const Auth = () => {
 
         dispatch(LOGIN_POST_REQ(data))
 
+        if (isLoading.status === "fullfiled" && (isLoading.name === "login" || isLoading.name === "signup")) {
+            Success_Toast(isLoading?.message);
+            navigate("/home", {
+                replace: true
+            })
+        }
 
 
     }
@@ -42,13 +49,14 @@ const Auth = () => {
             <LoadingSpinner />
         </div>
     }
-    if (isLoading.status === "fullfiled" && (isLoading.name === "login" || isLoading.name === "signup")) {
-        Success_Toast(isLoading?.message);
-        navigate("/home")
-    }
-    if (isLoading.status === "rejected" && (isLoading.name === "login" || isLoading.name === "signup")) {
-        isLoading?.errors?.map(err => Error_Toast(Object.values(err)));
-        Error_Toast(isLoading.message);
+    let errorShow;
+    if (status === "rejected") {
+        if (isLoading?.errors) {
+            errorShow = isLoading?.errors?.map(err => Object.values(err));
+        } else {
+            errorShow = isLoading.message
+        }
+
 
     }
 
@@ -86,10 +94,14 @@ const Auth = () => {
                 </div>}
 
                 <div className={styles.loginBtn}>
+
                     <button type="submit">{isSignUp ? "Sign Up" : "Login"}</button>
 
                 </div>
             </form>
+            <div className={styles.errorShow}>
+                {errorShow}
+            </div>
             {!isSignUp && <p className={styles.changeTo}>Don't have an account? <span onClick={() => handleSignUp(true)}>Sign Up</span></p>}
             {isSignUp && <p className={styles.changeTo}><span onClick={() => handleSignUp(false)}>Back</span></p>}
         </div>
