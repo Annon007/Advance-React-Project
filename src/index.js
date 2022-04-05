@@ -6,11 +6,15 @@ import { BrowserRouter } from "react-router-dom";
 import { Provider } from "react-redux";
 import store from "./store/main"
 
+import { QueryClientProvider, QueryClient } from 'react-query';
+const queryClient = new QueryClient
 ReactDOM.render(
   <BrowserRouter>
+  <QueryClientProvider client={queryClient} >
     <Provider store={store}>
       <App />
     </Provider>
+  </QueryClientProvider>
   </BrowserRouter>,
   document.getElementById('root')
 );

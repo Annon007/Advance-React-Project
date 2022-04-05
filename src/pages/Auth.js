@@ -4,17 +4,21 @@ import styles from "./Auth.module.css";
 import LoadingSpinner from "../ui/LoadingSpinner";
 import { loginActions } from "../store/login-slice";
 import { LOGIN_POST_REQ } from "../store/login-actions";
+import { SIGNUP_POST_REQ } from "../store/signup-actions";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
-import { Success_Toast } from "../ui/toast/Toast.js";
+import { Error_Toast, Success_Toast } from "../ui/toast/Toast.js";
 
 const Auth = () => {
     const [isSignUp, setIsSignUp] = useState(false);
     const dispatch = useDispatch();
     const isLoading = useSelector(state => state.notification);
+    const sign = useSelector(state => state.signup);
     const navigate = useNavigate();
 
+
+    console.log(sign, "SIGNUP DATA")
     let { status } = isLoading;
 
 
@@ -24,6 +28,16 @@ const Auth = () => {
     }
     const onSignupSubmit = (e) => {
         e.preventDefault()
+
+        const formData = new FormData(e.target);
+        const signupData = Object.fromEntries(formData);
+        console.log(signupData);
+        dispatch(SIGNUP_POST_REQ(signupData));
+        if (isLoading.status === "fullfiled" && (isLoading.name === "login" || isLoading.name === "signup")) {
+            Success_Toast(isLoading?.message);
+            
+            handleSignUp(false)
+        }
     }
     const onLoginSubmit = (e) => {
         e.preventDefault();
@@ -52,7 +66,7 @@ const Auth = () => {
     let errorShow;
     if (status === "rejected") {
         if (isLoading?.errors) {
-            errorShow = isLoading?.errors?.map(err => Object.values(err));
+            isLoading?.errors?.map(err => Error_Toast(Object.values(err)));
         } else {
             errorShow = isLoading.message
         }
